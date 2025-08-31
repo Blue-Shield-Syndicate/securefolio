@@ -12,6 +12,12 @@
     --fade-opacity: 0;
     --transition-speed: 0.5s;
     --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    --cyber-bg-color-1: #0A0A1F;
+    --cyber-bg-color-2: #161830;
+
+    --name-color: #00ffc8;
+    --glow-color: rgba(0, 255, 200, 0.7);
 }
 
 [data-theme='light'] {
@@ -24,6 +30,12 @@
     --highlight-color: #3b82f6;
     --subtle-text: #6b7280;
     --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    
+    --cyber-bg-color-1: #e9f2f7;
+    --cyber-bg-color-2: #d6eaf2;
+
+    --name-color: #008064;
+    --glow-color: rgba(0, 128, 100, 0.7);
 }
 
 /* --- Base Styles --- */
@@ -41,8 +53,10 @@ body {
     font-family: 'Poppins', sans-serif;
     line-height: 1.6;
     color: var(--text-color);
-    background-color: var(--bg-color);
+    background: linear-gradient(135deg, var(--cyber-bg-color-1), var(--cyber-bg-color-2));
     transition: background-color var(--transition-speed), color var(--transition-speed);
+    overflow-x: hidden;
+    min-height: 100vh;
 }
 
 a {
@@ -62,6 +76,8 @@ section {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    position: relative;
+    z-index: 1;
 }
 
 .section-title {
@@ -156,11 +172,12 @@ header {
     transform: translateX(24px);
 }
 
-/* --- Hero Section --- */
+/* --- Hero Section with New Effects --- */
 #hero {
     text-align: center;
     min-height: 100vh;
     justify-content: center;
+    overflow: hidden;
 }
 
 .hero-title {
@@ -168,10 +185,23 @@ header {
     font-weight: 700;
     line-height: 1.2;
     margin-bottom: 15px;
+    font-family: 'Poppins', sans-serif;
+    white-space: nowrap;
+    overflow: hidden;
+    border-right: .15em solid var(--primary-color);
+    width: 0;
+    animation: 
+        typing 3s steps(40, end) forwards, 
+        blink-caret .75s step-end infinite;
+    animation-play-state: paused;
 }
 
 .name-highlight {
-    color: var(--primary-color);
+    color: var(--name-color);
+    text-shadow: 
+        0 0 3px var(--glow-color),
+        0 0 8px var(--glow-color);
+    animation: glow 1.5s ease-in-out infinite alternate;
 }
 
 .hero-subtitle {
@@ -221,6 +251,7 @@ header {
 .about-text {
     flex: 2;
     font-size: 1.1em;
+    text-align: justify;
 }
 
 .resume-button {
@@ -317,9 +348,18 @@ header {
 }
 
 /* --- Cards Styling for Courses, Projects, and Experience --- */
-.courses-container, .projects-container, .experience-container {
+.courses-container, .projects-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    width: 100%;
+    max-width: 1200px;
+}
+
+/* This is the new change: Use flexbox for a vertical stack */
+.experience-container {
+    display: flex;
+    flex-direction: column;
     gap: 30px;
     width: 100%;
     max-width: 1200px;
@@ -336,6 +376,10 @@ header {
 .course-card:hover, .project-card:hover, .job-card:hover {
     transform: translateY(-10px);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.job-card {
+    width: 100%; /* Ensure each card takes the full width */
 }
 
 .course-card h3, .project-card h3, .job-card h3 {
@@ -399,6 +443,30 @@ footer {
     padding: 20px;
     border-top: 1px solid var(--border-color);
     color: var(--subtle-text);
+}
+
+/* --- Keyframe Animations --- */
+@keyframes glow {
+    from {
+        text-shadow: 
+            0 0 3px var(--glow-color),
+            0 0 8px var(--glow-color);
+    }
+    to {
+        text-shadow: 
+            0 0 5px var(--glow-color),
+            0 0 15px var(--glow-color);
+    }
+}
+
+@keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: var(--primary-color); }
 }
 
 /* --- Fade-In Animation --- */
