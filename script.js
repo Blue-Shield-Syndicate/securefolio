@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const modeToggle = document.getElementById('mode-toggle-checkbox');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 
-    // Set initial theme based on system preference
     if (prefersDark.matches) {
         document.documentElement.setAttribute('data-theme', 'dark');
         modeToggle.checked = true;
@@ -12,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
         modeToggle.checked = false;
     }
 
-    // Listen for system preference changes
     prefersDark.addListener((e) => {
         if (e.matches) {
             document.documentElement.setAttribute('data-theme', 'dark');
@@ -23,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Handle manual toggle
     modeToggle.addEventListener('change', () => {
         if (modeToggle.checked) {
             document.documentElement.setAttribute('data-theme', 'dark');
@@ -32,8 +29,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- Fade-in on Scroll Animation ---
+    // --- Fade-in on Scroll and Typing Animation ---
     const faders = document.querySelectorAll('.fade-in');
+    const heroTitle = document.querySelector('.hero-title');
+
     const appearOptions = {
         threshold: 0.2
     };
@@ -44,6 +43,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             entry.target.classList.add('visible');
+            
+            // Trigger typing animation when hero section becomes visible
+            if (entry.target.id === 'hero') {
+                heroTitle.style.animationPlayState = 'running';
+            }
+
             appearOnScroll.unobserve(entry.target);
         });
     }, appearOptions);
