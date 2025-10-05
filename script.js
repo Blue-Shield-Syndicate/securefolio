@@ -44,7 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             entry.target.classList.add('visible');
             
-            // Trigger typing animation when hero section becomes visible
             if (entry.target.id === 'hero') {
                 heroTitle.style.animationPlayState = 'running';
             }
@@ -78,4 +77,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }, skillOptions);
 
     skillObserver.observe(skillSection);
+    
+    // --- Mobile Menu (Hamburger) ---
+    const menuToggle = document.getElementById('mobile-menu');
+    const navLinks = document.querySelector('.nav-links');
+
+    menuToggle.addEventListener('click', () => {
+        menuToggle.classList.toggle('active');
+        navLinks.classList.toggle('active');
+    });
+
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', () => {
+            menuToggle.classList.remove('active');
+            navLinks.classList.remove('active');
+        });
+    });
+
+    // --- Custom Cursor Effect ---
+    const customCursor = document.createElement('div');
+    customCursor.classList.add('custom-cursor');
+    document.body.appendChild(customCursor);
+
+    document.addEventListener('mousemove', (e) => {
+        customCursor.style.left = e.clientX + 'px';
+        customCursor.style.top = e.clientY + 'px';
+    });
+
+    document.addEventListener('mousedown', () => {
+        customCursor.style.transform = 'translate(-50%, -50%) scale(0.8)';
+    });
+
+    document.addEventListener('mouseup', () => {
+        customCursor.style.transform = 'translate(-50%, -50%) scale(1)';
+    });
 });
