@@ -18,6 +18,9 @@
 
     --name-color: #00ffc8;
     --glow-color: rgba(0, 255, 200, 0.7);
+    --bg-rgb-r: 0;   /* Black for dark theme */
+    --bg-rgb-g: 0;
+    --bg-rgb-b: 0;
 }
 
 [data-theme='light'] {
@@ -36,6 +39,9 @@
 
     --name-color: #008064;
     --glow-color: rgba(0, 128, 100, 0.7);
+    --bg-rgb-r: 255; /* White for light theme */
+    --bg-rgb-g: 255;
+    --bg-rgb-b: 255;
 }
 
 /* --- Base Styles --- */
@@ -50,23 +56,77 @@ html {
 }
 
 body {
+    cursor: none;
     font-family: 'Poppins', sans-serif;
     line-height: 1.6;
     color: var(--text-color);
-    background: linear-gradient(135deg, var(--cyber-bg-color-1), var(--cyber-bg-color-2));
+    background: 
+        linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), /* Dark overlay */
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 0 0 L 0 100 L 100 100 L 100 0 L 0 0 Z" fill="none" stroke="rgba(var(--bg-rgb-r), var(--bg-rgb-g), var(--bg-rgb-b), 0.08)" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(#grid)"/></svg>') top left / 50px 50px, /* Grid pattern */
+        linear-gradient(135deg, var(--cyber-bg-color-1), var(--cyber-bg-color-2)); /* Main gradient */
+    background-blend-mode: overlay, multiply, normal;
     transition: background-color var(--transition-speed), color var(--transition-speed);
     overflow-x: hidden;
     min-height: 100vh;
+    position: relative;
 }
 
-a {
-    color: var(--primary-color);
-    text-decoration: none;
-    transition: color 0.3s ease;
+body::before,
+body::after {
+    content: '';
+    position: fixed;
+    width: 200px;
+    height: 200px;
+    background-repeat: no-repeat;
+    background-size: contain;
+    opacity: 0.05;
+    pointer-events: none;
+    z-index: -1;
+    animation: floatEffect 15s ease-in-out infinite alternate;
 }
 
-a:hover {
-    color: var(--highlight-color);
+body::before {
+    top: 10%;
+    left: 5%;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%2300ffc8" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>');
+    animation-delay: 0s;
+}
+
+body::after {
+    bottom: 10%;
+    right: 5%;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%2300ffc8" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>');
+    animation-delay: 5s;
+    width: 150px;
+    height: 150px;
+}
+
+@keyframes floatEffect {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(20px, 20px) scale(1.05); }
+    100% { transform: translate(0, 0) scale(1); }
+}
+
+a, button, .mode-toggle-label, .menu-toggle {
+    cursor: pointer;
+}
+
+.custom-cursor {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--primary-color);
+    border-radius: 50%;
+    position: fixed;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.1s ease-out, border-color 0.3s ease;
+    animation: cursorGlow 1.5s infinite alternate;
+}
+
+@keyframes cursorGlow {
+    from { box-shadow: 0 0 5px var(--glow-color), 0 0 10px var(--glow-color); }
+    to { box-shadow: 0 0 8px var(--glow-color), 0 0 15px var(--glow-color); }
 }
 
 section {
@@ -356,7 +416,6 @@ header {
     max-width: 1200px;
 }
 
-/* This is the new change: Use flexbox for a vertical stack */
 .experience-container {
     display: flex;
     flex-direction: column;
@@ -379,7 +438,7 @@ header {
 }
 
 .job-card {
-    width: 100%; /* Ensure each card takes the full width */
+    width: 100%;
 }
 
 .course-card h3, .project-card h3, .job-card h3 {
@@ -481,6 +540,21 @@ footer {
     transform: translateY(0);
 }
 
+/* --- Hamburger Menu Icon --- */
+.menu-toggle {
+    display: none;
+    cursor: pointer;
+}
+
+.bar {
+    display: block;
+    width: 25px;
+    height: 3px;
+    margin: 5px auto;
+    background-color: var(--text-color);
+    transition: all 0.3s ease-in-out;
+}
+
 /* --- Responsive Design --- */
 @media (max-width: 768px) {
     .section-title {
@@ -488,27 +562,63 @@ footer {
         margin-bottom: 40px;
     }
 
+    .menu-toggle {
+        display: block;
+        z-index: 1002;
+    }
+
     .nav-links {
         display: none;
         flex-direction: column;
+        justify-content: center;
+        align-items: center;
         width: 100%;
-        text-align: center;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: -100%;
         background-color: var(--bg-color);
+        transition: left 0.5s ease;
+        z-index: 1001;
     }
+
     .nav-links.active {
         display: flex;
+        left: 0;
+    }
+
+    .nav-links li {
+        margin: 20px 0;
+    }
+
+    .nav-links a {
+        font-size: 1.5em;
+    }
+    
+    .menu-toggle.active .bar:nth-child(2) {
+        opacity: 0;
+    }
+    .menu-toggle.active .bar:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+    }
+    .menu-toggle.active .bar:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
     }
 
     .navbar {
-        flex-wrap: wrap;
+        justify-content: space-between;
     }
 
+    .logo, .mode-toggle {
+        z-index: 1002;
+    }
+    
     .hero-title {
-        font-size: 2.5em;
+        font-size: 2.2em;
     }
 
     .hero-subtitle {
-        font-size: 1.2em;
+        font-size: 1.1em;
     }
 
     .about-container {
@@ -524,12 +634,8 @@ footer {
         flex-direction: column;
         gap: 20px;
     }
-
-    .soft-skills-container {
-        justify-content: center;
-    }
-
-    .skill-card {
-        flex-basis: auto;
+    
+    section {
+        padding: 60px 5%;
     }
 }
